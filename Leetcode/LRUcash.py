@@ -1,41 +1,46 @@
-# class queue():
-#     class element:
-#         last = None
-#         next = None
-#         value = None
-#         __init__(self, Value: int):
-#             self.value = Value
-#     Queue = []
-#     head = None
-#     tail = None
-#     Capacity = 0
-#     def __init__(self, capacity: int):
-#         self.Capacity = capacity
-
+class element:
+    last = None
+    next = None
+    value = None
+    def __init__(self, Value: int):
+        self.value = Value
 class LRUCache:
-    Dict = {}
-    Queue = queue()
+    Head = None
+    Tail = element(-1)
     Capacity = 0
+    Dict = {}
+    Size = 0
     def __init__(self, capacity: int):
         self.Capacity = capacity
 
-    def get(self, key: int) -> int:
-        self.Headindex = len(self.Queue)
-        print(type(self.Dict.get(key)))
-        if self.Dict.get(key) is not None and self.Dict.get(key) > (len(self.Queue) - self.Capacity - 1) :
-            Value = self.Queue[self.Dict.get(key)]
-            self.put(key, Value)
-            return Value
+    def put(self, key, value):
+        if self.Size == 0:
+            self.Dict[key] = element(value)
+            self.Head = self.Dict.get(key)
+            self.Head.last = self.Tail
+            self.Tail.next = self.Head
+            self.Size += 1
+        elif self.Size < self.Capacity:
+            if self.Dict.get(key) is None:
+                self.Dict[key] = element(value)
+                self.Head.next = self.Dict.get(key)
+                self.Dict.get(key).last = self.Head
+                self.Head = self.Dict.get(key)
+            else:
+                self.Dict.get(key).last.next = self.Dict.get(key).next
+                self.Dict.get(key).next.last = self.Dict.get(key).last
+                self.Head = self.Dict.get(key)
         else:
-            return -1
+            self.Tail = self.Tail.next
 
-    def put(self, key: int, value: int):
-        self.Queue.append(value)
-        self.Dict[key] = len(self.Queue)-1
 
-# cache = LRUCache(2)
-# cache.put(1, 1)
-# cache.put(2, 2)
+
+cache = LRUCache(2)
+cache.put(1, 1)
+cache.put(2, 2)
+cache.put(1, 1)
+cache.put(3, 100)
+print(cache.Tail.value)
 # print(cache.get(1))       #// returns 1
 # cache.put(3, 3)    #// evicts key 2
 # print(cache.get(2))      #// returns -1 (not found)
